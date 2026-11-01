@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { 
   Compass, 
   CheckCircle2, 
@@ -6,10 +6,52 @@ import {
   Layers, 
   ShieldCheck, 
   Sparkles,
-  FileCheck
+  FileCheck,
+  Linkedin,
+  Mail,
+  Send,
+  Copy,
+  Check,
+  MessageSquare,
+  ExternalLink
 } from 'lucide-react';
 
 export const AboutPage: React.FC = () => {
+  const [feedbackText, setFeedbackText] = useState('');
+  const [feedbackError, setFeedbackError] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
+
+  const handleSendFeedback = () => {
+    const trimmed = feedbackText.trim();
+    if (!trimmed) {
+      setFeedbackError('Please enter your feedback before sending.');
+      return;
+    }
+
+    setFeedbackError(null);
+    const recipient = 'harshsahu280413@gmail.com';
+    const subject = encodeURIComponent('GapGlint - User Feedback');
+    const body = encodeURIComponent(trimmed);
+    window.location.href = `mailto:${recipient}?subject=${subject}&body=${body}`;
+  };
+
+  const handleCopyFeedback = async () => {
+    const trimmed = feedbackText.trim();
+    if (!trimmed) {
+      setFeedbackError('Please enter your feedback before copying.');
+      return;
+    }
+
+    try {
+      await navigator.clipboard.writeText(trimmed);
+      setCopied(true);
+      setFeedbackError(null);
+      setTimeout(() => setCopied(false), 3000);
+    } catch {
+      setFeedbackError('Could not copy automatically. Please select and copy manually.');
+    }
+  };
+
   return (
     <div className="space-y-8 pb-12 max-w-5xl mx-auto">
       {/* Hero */}
@@ -129,6 +171,147 @@ export const AboutPage: React.FC = () => {
             <p className="text-[11px] text-slate-500 mt-1 leading-relaxed">
               Outputs practical, structured next steps rather than overwhelming walls of unverified text.
             </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Developer Profile Section */}
+      <div className="bg-white rounded-3xl p-6 md:p-8 border border-slate-200/90 shadow-card relative overflow-hidden">
+        {/* Subtle decorative glow in top right */}
+        <div className="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 bg-electric-500/5 rounded-full blur-3xl pointer-events-none" />
+
+        <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 md:gap-8 relative z-10">
+          {/* Left Side: Photograph */}
+          <div className="flex-shrink-0 relative group">
+            <div className="w-36 h-36 sm:w-44 sm:h-44 md:w-48 md:h-48 rounded-2xl overflow-hidden border-2 border-electric-500/40 shadow-lg shadow-electric-600/10 ring-4 ring-electric-500/10 bg-navy-950 flex items-center justify-center transition-transform duration-300 group-hover:scale-[1.02]">
+              <img 
+                src="/harsh-sahu.jpg" 
+                alt="Harsh Sahu - Founder & Developer of GapGlint" 
+                className="w-full h-full object-cover object-top"
+                loading="eager"
+              />
+            </div>
+            {/* Status indicator pill */}
+            <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-navy-950 text-white text-[10px] font-semibold border border-navy-800 shadow-sm whitespace-nowrap">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+              <span>Lead Architect</span>
+            </div>
+          </div>
+
+          {/* Right Side: Information & Action Buttons */}
+          <div className="flex-1 flex flex-col justify-between text-center sm:text-left pt-1">
+            <div>
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-electric-50 text-electric-700 text-xs font-semibold mb-2.5 border border-electric-200/60">
+                <Sparkles className="w-3.5 h-3.5 text-electric-600" />
+                <span>Founder &amp; Developer of GapGlint</span>
+              </div>
+
+              <h3 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+                Harsh Sahu
+              </h3>
+
+              <p className="text-xs sm:text-sm font-semibold text-electric-600 mt-1">
+                Built with curiosity. Driven by innovation.
+              </p>
+
+              <p className="text-xs sm:text-sm text-slate-600 mt-3 leading-relaxed max-w-2xl">
+                &ldquo;Building technology that makes information more transparent, accessible and reliable.&rdquo;
+              </p>
+            </div>
+
+            {/* Contact Action Buttons */}
+            <div className="mt-6 flex flex-wrap items-center justify-center sm:justify-start gap-3">
+              <a
+                href="https://www.linkedin.com/in/harshsahu01/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-electric-600 hover:bg-electric-700 text-white text-xs font-semibold shadow-sm hover:shadow transition-all duration-200 hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-electric-500 focus:ring-offset-2"
+              >
+                <Linkedin className="w-4 h-4" />
+                <span>CONNECT ON LINKEDIN</span>
+                <ExternalLink className="w-3.5 h-3.5 opacity-80" />
+              </a>
+
+              <a
+                href="mailto:harshsahu280413@gmail.com"
+                className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-white hover:bg-slate-50 text-slate-700 hover:text-slate-900 border border-slate-300 text-xs font-semibold shadow-xs transition-all duration-200 hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2"
+              >
+                <Mail className="w-4 h-4 text-electric-600" />
+                <span>CONTACT VIA EMAIL</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Feedback & Suggestions Section */}
+      <div className="bg-white rounded-3xl p-6 md:p-8 border border-slate-200/90 shadow-card">
+        <div className="flex items-start gap-3 mb-4">
+          <div className="w-10 h-10 rounded-xl bg-electric-50 border border-electric-200/80 flex items-center justify-center text-electric-600 flex-shrink-0">
+            <MessageSquare className="w-5 h-5" />
+          </div>
+          <div>
+            <h3 className="text-base sm:text-lg font-bold text-slate-900 tracking-tight">
+              Have an idea to make GapGlint better?
+            </h3>
+            <p className="text-xs text-slate-500 mt-0.5 leading-relaxed">
+              Every suggestion matters. Share your ideas, report an issue, or suggest a feature that could make GapGlint more useful.
+            </p>
+          </div>
+        </div>
+
+        <div className="space-y-3">
+          <textarea
+            value={feedbackText}
+            onChange={(e) => {
+              setFeedbackText(e.target.value);
+              if (feedbackError) setFeedbackError(null);
+            }}
+            placeholder="Share your suggestions, ideas or feedback..."
+            rows={4}
+            className="w-full rounded-2xl border border-slate-200 p-4 text-xs sm:text-sm text-slate-800 placeholder-slate-400 focus:border-electric-500 focus:ring-2 focus:ring-electric-500/20 outline-none transition-all resize-y shadow-inner"
+          />
+
+          {feedbackError && (
+            <p className="text-xs text-rose-600 font-medium animate-fadeIn">
+              {feedbackError}
+            </p>
+          )}
+
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-1">
+            <p className="text-[11px] text-slate-400">
+              Direct recipient: <span className="text-slate-600 font-medium">harshsahu280413@gmail.com</span>
+            </p>
+
+            <div className="flex items-center gap-2 self-end sm:self-auto">
+              <button
+                type="button"
+                onClick={handleCopyFeedback}
+                className="inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-600 text-xs font-semibold border border-slate-200 transition-colors"
+                title="Copy feedback text to clipboard if default email client is unavailable"
+              >
+                {copied ? (
+                  <>
+                    <Check className="w-3.5 h-3.5 text-emerald-600" />
+                    <span className="text-emerald-700">Copied!</span>
+                  </>
+                ) : (
+                  <>
+                    <Copy className="w-3.5 h-3.5 text-slate-500" />
+                    <span>Copy Text</span>
+                  </>
+                )}
+              </button>
+
+              <button
+                type="button"
+                onClick={handleSendFeedback}
+                className="inline-flex items-center justify-center gap-2 px-5 py-2 rounded-xl bg-electric-600 hover:bg-electric-700 text-white text-xs font-semibold shadow-sm hover:shadow transition-all duration-200 hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-electric-500 focus:ring-offset-2"
+              >
+                <Send className="w-3.5 h-3.5" />
+                <span>Send Feedback</span>
+              </button>
+            </div>
           </div>
         </div>
       </div>
