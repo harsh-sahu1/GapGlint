@@ -38,6 +38,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           } else {
             setApiOnline(false);
           }
+          
         })
         .catch(() => {
           setApiOnline(false);
@@ -186,7 +187,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             )} />
             {!collapsed && (
               <span className="text-xs text-slate-400">
-                {apiOnline === true ? "FastAPI: Connected" : apiOnline === false ? "FastAPI: Offline/Port 8000" : "Checking API..."}
+                {apiOnline === true ? "FastAPI: Connected" : apiOnline === false ? "FastAPI: Offline" : "Checking API..."}
               </span>
             )}
           </div>

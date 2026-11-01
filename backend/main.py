@@ -41,9 +41,12 @@ app.add_middleware(
 app.include_router(health_router)
 app.include_router(analyze_router)
 
+# Direct root and health endpoints to ensure compatibility with all serverless URL rewrites
 @app.get("/")
 async def root():
     return {
+        "status": "healthy",
+        "application": "GapGlint",
         "message": "Welcome to GapGlint API",
         "tagline": "See the Gaps. Trace the Claims. Decide with Evidence.",
         "endpoints": {
@@ -51,6 +54,13 @@ async def root():
             "analyze": "/api/analyze",
             "analyze_json": "/api/analyze/json"
         }
+    }
+
+@app.get("/health")
+def direct_health():
+    return {
+        "status": "healthy",
+        "application": "GapGlint"
     }
 
 if __name__ == "__main__":
