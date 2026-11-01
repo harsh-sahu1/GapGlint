@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import { NavSection } from '../types';
 import { cn } from '../lib/utils';
+import { apiUrl } from '../lib/api';
 
 interface SidebarProps {
   currentSection: NavSection;
@@ -29,7 +30,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
   useEffect(() => {
     const checkHealth = () => {
-      fetch('/api/health')
+      fetch(apiUrl('/api/health'))
         .then(res => res.json())
         .then(data => {
           if (data && data.status === 'healthy') {

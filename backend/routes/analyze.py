@@ -112,6 +112,11 @@ async def analyze_sources_multipart(
         if pdf.filename:
             src_id = f"pdf-{uuid.uuid4().hex[:8]}"
             content = await pdf.read()
+            if len(content) > 4.5 * 1024 * 1024:
+                raise HTTPException(
+                    status_code=413,
+                    detail=f"File '{pdf.filename}' ({len(content)/(1024*1024):.1f}MB) exceeds the 4.5MB serverless payload limit. Please upload a PDF under 4MB, or provide URLs/text excerpts directly."
+                )
             res = extract_from_pdf_bytes(content, pdf.filename, src_id)
             extracted_sources.append(res)
 

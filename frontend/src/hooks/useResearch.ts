@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
 import { Source, AnalysisResponse } from '../types';
+import { apiUrl } from '../lib/api';
 
 export function useResearch() {
   const [topic, setTopic] = useState('');
@@ -59,9 +60,12 @@ export function useResearch() {
       return false;
     }
 
-    // Limit to 25MB
-    if (file.size > 25 * 1024 * 1024) {
-      showNotification('File exceeds maximum size limit of 25MB.');
+    // Limit to 4MB for Vercel Serverless payload compatibility (4.5MB hard limit)
+    const MAX_PDF_BYTES = 4 * 1024 * 1024;
+    if (file.size > MAX_PDF_BYTES) {
+      showNotification(
+        `"${file.name}" (${(file.size / (1024 * 1024)).toFixed(1)}MB) exceeds the 4MB limit for serverless processing. Please upload a PDF under 4MB, or paste text excerpts/URLs directly.`
+      );
       return false;
     }
 
@@ -198,7 +202,7 @@ export function useResearch() {
         }
       }
 
-      const response = await fetch('/api/analyze', {
+      const response = await fetch(apiUrl('/api/analyze'), {
         method: 'POST',
         body: formData,
       });

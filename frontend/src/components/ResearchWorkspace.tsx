@@ -243,7 +243,7 @@ export const ResearchWorkspace: React.FC<ResearchWorkspaceProps> = ({
                   Drop official PDF guidelines here, or <span className="text-electric-600 underline">browse</span>
                 </p>
                 <p className="text-xs text-slate-400 mt-1">
-                  Supports multi-page policy manuals, notices, brochures (up to 25MB each)
+                  Supports multi-page policy manuals, notices, brochures (up to 4MB each for serverless processing)
                 </p>
               </div>
             </div>
