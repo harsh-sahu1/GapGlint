@@ -3,7 +3,7 @@ from typing import List, Optional, Literal
 
 class SourceInput(BaseModel):
     id: str
-    type: Literal["url", "pdf", "text"]
+    type: Literal["url", "pdf", "text", "audio"]
     title: str
     url: Optional[str] = None
     textContent: Optional[str] = None
@@ -12,7 +12,7 @@ class SourceInput(BaseModel):
 
 class ExtractedSource(BaseModel):
     source_id: str
-    type: Literal["url", "pdf", "text"]
+    type: Literal["url", "pdf", "text", "audio"]
     title: str
     url_or_filename: str
     extracted_text: str
@@ -125,3 +125,15 @@ class AnalysisResponse(BaseModel):
     undated_sources: List[UndatedSourceWarning] = []
     checklist: List[VerificationChecklistItem]
     synthesis_summary: str
+
+class AudioTranscriptionResponse(BaseModel):
+    success: bool = True
+    transcript: str
+    request_id: Optional[str] = None
+    model: str = "prisma-v3.0"
+    detected_language_code: Optional[str] = None
+    processing_time: Optional[float] = None
+    end_to_end_latency: Optional[float] = None
+    filename: Optional[str] = None
+    file_size_bytes: Optional[int] = None
+

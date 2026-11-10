@@ -27,6 +27,12 @@ interface OverviewPageProps {
   onAddUrl: (url?: string) => boolean;
   onAddPdf: (file: File) => boolean;
   onAddManualText: () => boolean;
+  onAddAudioSource?: (
+    filename: string,
+    transcript: string,
+    fileSize?: number,
+    metadata?: Source['audioMetadata']
+  ) => boolean;
   onRemoveSource: (id: string) => void;
   onAnalyze: () => void;
   isAnalyzing: boolean;
@@ -50,6 +56,7 @@ export const OverviewPage: React.FC<OverviewPageProps> = ({
   onAddUrl,
   onAddPdf,
   onAddManualText,
+  onAddAudioSource,
   onRemoveSource,
   onAnalyze,
   isAnalyzing,
@@ -191,6 +198,7 @@ export const OverviewPage: React.FC<OverviewPageProps> = ({
           onAddUrl={onAddUrl}
           onAddPdf={onAddPdf}
           onAddManualText={onAddManualText}
+          onAddAudioSource={onAddAudioSource}
           onRemoveSource={onRemoveSource}
           onAnalyze={onAnalyze}
           isAnalyzing={isAnalyzing}

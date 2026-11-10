@@ -36,15 +36,16 @@ class AnalyzeJsonPayload(BaseModel):
     question: Optional[str] = None
     urls: List[str] = []
     manual_texts: List[dict] = [] # list of {"id": str, "title": str, "content": str}
+    audio_transcripts: List[dict] = [] # list of {"id": str, "filename": str, "transcript": str}
 
 @router.post("/analyze/json", response_model=AnalysisResponse)
 async def analyze_sources_json(payload: AnalyzeJsonPayload):
-    """Analyze sources provided via JSON payload (URLs and manual text)."""
+    """Analyze sources provided via JSON payload (URLs, manual text, and audio transcripts)."""
     if not payload.topic.strip():
         raise HTTPException(status_code=400, detail="Research topic is required.")
 
-    if not payload.urls and not payload.manual_texts:
-        raise HTTPException(status_code=400, detail="At least one source (URL or text) must be provided.")
+    if not payload.urls and not payload.manual_texts and not payload.audio_transcripts:
+        raise HTTPException(status_code=400, detail="At least one source (URL, text, or audio transcript) must be provided.")
 
     extracted_sources: List[ExtractedSource] = []
 
@@ -63,6 +64,23 @@ async def analyze_sources_json(payload: AnalyzeJsonPayload):
             title = item.get("title") or "Manual Note"
             res = extract_from_manual_text(content, src_id, title)
             extracted_sources.append(res)
+
+    # Process audio transcripts
+    for item in payload.audio_transcripts:
+        transcript_text = item.get("transcript", "").strip()
+        if transcript_text:
+            src_id = item.get("id") or f"audio-{uuid.uuid4().hex[:8]}"
+            orig_filename = item.get("filename") or "Audio Recording"
+            extracted_sources.append(ExtractedSource(
+                source_id=src_id,
+                type="audio",
+                title=f"Audio: {orig_filename}",
+                url_or_filename=orig_filename,
+                extracted_text=transcript_text,
+                status="success",
+                character_count=len(transcript_text)
+            ))
+
 
     # Run AI pipeline
     try:
@@ -85,9 +103,10 @@ async def analyze_sources_multipart(
     question: Optional[str] = Form(None),
     urls_json: Optional[str] = Form(None), # JSON array string: ["https://..."]
     manual_text: Optional[str] = Form(None),
+    audio_transcripts_json: Optional[str] = Form(None), # JSON array string: [{"id": "...", "filename": "...", "transcript": "..."}]
     pdf_files: List[UploadFile] = File(default=[])
 ):
-    """Multipart endpoint supporting file uploads alongside URLs and text."""
+    """Multipart endpoint supporting file uploads alongside URLs, text, and audio transcripts."""
     if not topic.strip():
         raise HTTPException(status_code=400, detail="Research topic is required.")
 
@@ -126,10 +145,31 @@ async def analyze_sources_multipart(
         res = extract_from_manual_text(manual_text.strip(), src_id)
         extracted_sources.append(res)
 
+    # Process Audio Transcripts
+    if audio_transcripts_json and audio_transcripts_json.strip():
+        try:
+            audio_items = json.loads(audio_transcripts_json)
+            for item in audio_items:
+                transcript_text = item.get("transcript", "").strip()
+                if transcript_text:
+                    src_id = item.get("id") or f"audio-{uuid.uuid4().hex[:8]}"
+                    orig_filename = item.get("filename") or "Audio Recording"
+                    extracted_sources.append(ExtractedSource(
+                        source_id=src_id,
+                        type="audio",
+                        title=f"Audio: {orig_filename}",
+                        url_or_filename=orig_filename,
+                        extracted_text=transcript_text,
+                        status="success",
+                        character_count=len(transcript_text)
+                    ))
+        except Exception as e:
+            logger.warning(f"Failed to parse audio_transcripts_json: {e}")
+
     if not extracted_sources:
         raise HTTPException(
             status_code=400,
-            detail="No valid sources were submitted. Please provide at least one URL, PDF document, or text excerpt."
+            detail="No valid sources were submitted. Please provide at least one URL, PDF document, text excerpt, or audio recording."
         )
 
     # Run AI analysis

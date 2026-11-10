@@ -9,7 +9,8 @@ import {
   Clock, 
   AlertTriangle,
   Copy,
-  Check
+  Check,
+  Mic
 } from 'lucide-react';
 import { EvidenceTraceModalData } from '../types';
 
@@ -46,6 +47,7 @@ export const EvidenceDrawer: React.FC<EvidenceDrawerProps> = ({ data, onClose })
   const getSourceIcon = () => {
     if (data.sourceType === 'url') return <Globe className="w-4 h-4 text-blue-600" />;
     if (data.sourceType === 'pdf') return <FileText className="w-4 h-4 text-rose-600" />;
+    if (data.sourceType === 'audio') return <Mic className="w-4 h-4 text-purple-600" />;
     return <AlignLeft className="w-4 h-4 text-amber-600" />;
   };
 

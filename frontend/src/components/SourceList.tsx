@@ -1,6 +1,6 @@
 import React from 'react';
 import { Source } from '../types';
-import { Globe, FileText, AlignLeft, Trash2, CheckCircle2 } from 'lucide-react';
+import { Globe, FileText, AlignLeft, Mic, Trash2, CheckCircle2 } from 'lucide-react';
 import { formatBytes } from '../lib/utils';
 
 interface SourceListProps {
@@ -34,6 +34,10 @@ export const SourceList: React.FC<SourceListProps> = ({ sources, onRemoveSource 
             Icon = AlignLeft;
             badgeText = 'Text Note';
             badgeClass = 'bg-amber-50 text-amber-700 border-amber-200';
+          } else if (source.type === 'audio') {
+            Icon = Mic;
+            badgeText = 'Voice / Audio';
+            badgeClass = 'bg-purple-50 text-purple-700 border-purple-200';
           }
 
           return (

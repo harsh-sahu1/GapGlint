@@ -29,6 +29,7 @@ export const App: React.FC = () => {
             onAddUrl={research.addUrlSource}
             onAddPdf={research.addPdfSource}
             onAddManualText={research.addManualTextSource}
+            onAddAudioSource={research.addAudioSource}
             onRemoveSource={research.removeSource}
             onAnalyze={research.handleAnalyze}
             isAnalyzing={research.isAnalyzing}
@@ -54,6 +55,7 @@ export const App: React.FC = () => {
             onAddUrl={research.addUrlSource}
             onAddPdf={research.addPdfSource}
             onAddManualText={research.addManualTextSource}
+            onAddAudioSource={research.addAudioSource}
             onRemoveSource={research.removeSource}
             onAnalyze={research.handleAnalyze}
             isAnalyzing={research.isAnalyzing}

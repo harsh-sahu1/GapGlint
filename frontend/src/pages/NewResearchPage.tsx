@@ -16,6 +16,12 @@ interface NewResearchPageProps {
   onAddUrl: (url?: string) => boolean;
   onAddPdf: (file: File) => boolean;
   onAddManualText: () => boolean;
+  onAddAudioSource?: (
+    filename: string,
+    transcript: string,
+    fileSize?: number,
+    metadata?: Source['audioMetadata']
+  ) => boolean;
   onRemoveSource: (id: string) => void;
   onAnalyze: () => void;
   isAnalyzing: boolean;

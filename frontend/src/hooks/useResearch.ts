@@ -109,6 +109,35 @@ export function useResearch() {
     return true;
   }, [manualText]);
 
+  const addAudioSource = useCallback((
+    filename: string,
+    transcript: string,
+    fileSize?: number,
+    metadata?: Source['audioMetadata']
+  ) => {
+    const cleanTranscript = transcript.trim();
+    if (!cleanTranscript) {
+      showNotification('Transcript is empty, cannot add as source.');
+      return false;
+    }
+
+    const newSource: Source = {
+      id: `audio-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
+      type: 'audio',
+      title: `Audio: ${filename}`,
+      fileName: filename,
+      fileSize: fileSize,
+      textContent: cleanTranscript,
+      createdAt: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      status: 'ready',
+      audioMetadata: metadata
+    };
+
+    setSources(prev => [...prev, newSource]);
+    showNotification(`Added audio transcript from "${filename}" to evidence workspace`);
+    return true;
+  }, []);
+
   const removeSource = useCallback((id: string) => {
     setSources(prev => prev.filter(s => s.id !== id));
   }, []);
@@ -202,6 +231,17 @@ export function useResearch() {
         }
       }
 
+      // Collect Audio Transcripts
+      const audioSources = updatedSources.filter(s => s.type === 'audio' && s.textContent);
+      if (audioSources.length > 0) {
+        const audioPayload = audioSources.map(s => ({
+          id: s.id,
+          filename: s.fileName || s.title,
+          transcript: s.textContent
+        }));
+        formData.append('audio_transcripts_json', JSON.stringify(audioPayload));
+      }
+
       const response = await fetch(apiUrl('/api/analyze'), {
         method: 'POST',
         body: formData,
@@ -263,6 +303,7 @@ export function useResearch() {
     addUrlSource,
     addPdfSource,
     addManualTextSource,
+    addAudioSource,
     removeSource,
     handleAnalyze,
     resetWorkspace,

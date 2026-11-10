@@ -18,7 +18,8 @@ import {
   ShieldAlert,
   Clock,
   AlertOctagon,
-  Eye
+  Eye,
+  Mic
 } from 'lucide-react';
 import { 
   AnalysisTab, 
@@ -84,10 +85,11 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({
 
   const handleOpenTraceForClaim = (claim: ExtractedClaim) => {
     const src = sourceContextMap.get(claim.source_id);
+    const isAudio = src?.type === 'audio' || claim.source_title.toLowerCase().startsWith('audio') || claim.source_id.startsWith('audio-');
     setTraceModalData({
-      title: `Claim Evidence: ${claim.topic}`,
+      title: isAudio ? `Audio Claim Evidence: ${claim.topic}` : `Claim Evidence: ${claim.topic}`,
       sourceTitle: claim.source_title,
-      sourceType: (src?.type as any) || (claim.source_url?.startsWith('http') ? 'url' : 'text'),
+      sourceType: isAudio ? 'audio' : ((src?.type as any) || (claim.source_url?.startsWith('http') ? 'url' : 'text')),
       sourceUrlOrPath: claim.source_url || src?.url_or_filename,
       verbatimExcerpt: claim.evidence_excerpt,
       fullSourceContext: src?.extracted_text,
@@ -386,8 +388,16 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({
                             </div>
                           </td>
                           <td className="py-3">
-                            <span className="uppercase text-[10px] font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-600">
-                              {src.type}
+                            <span className={`uppercase text-[10px] font-bold px-2 py-0.5 rounded ${
+                              src.type === 'audio'
+                                ? 'bg-purple-100 text-purple-800 border border-purple-200'
+                                : src.type === 'pdf'
+                                ? 'bg-rose-100 text-rose-800'
+                                : src.type === 'url'
+                                ? 'bg-blue-100 text-blue-800'
+                                : 'bg-slate-100 text-slate-600'
+                            }`}>
+                              {src.type === 'audio' ? 'Voice / Audio' : src.type}
                             </span>
                           </td>
                           <td className="py-3 text-slate-600 font-mono">
@@ -521,8 +531,20 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({
                     {/* Source Attribution & Direct URL Link */}
                     <div className="flex items-center justify-between pt-1 text-[11px] text-slate-400 flex-wrap gap-2">
                       <div className="flex items-center gap-1.5 font-medium text-slate-600 truncate max-w-md">
-                        <FileText className="w-3.5 h-3.5 text-slate-400 flex-shrink-0" />
-                        <span className="truncate">Source: {claim.source_title}</span>
+                        {sourceContextMap.get(claim.source_id)?.type === 'audio' || claim.source_title.toLowerCase().startsWith('audio') ? (
+                          <>
+                            <Mic className="w-3.5 h-3.5 text-purple-600 flex-shrink-0" />
+                            <span className="truncate">Source: {claim.source_title}</span>
+                            <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-purple-50 text-purple-700 border border-purple-200">
+                              Voice Audio
+                            </span>
+                          </>
+                        ) : (
+                          <>
+                            <FileText className="w-3.5 h-3.5 text-slate-400 flex-shrink-0" />
+                            <span className="truncate">Source: {claim.source_title}</span>
+                          </>
+                        )}
                         {claim.source_url && claim.source_url.startsWith('http') && (
                           <a
                             href={claim.source_url}

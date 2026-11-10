@@ -8,10 +8,12 @@ import {
   Loader2, 
   FileUp, 
   AlignLeft,
-  AlertCircle
+  AlertCircle,
+  Mic
 } from 'lucide-react';
 import { Source } from '../types';
 import { SourceList } from './SourceList';
+import { AudioIngestionCard } from './AudioIngestionCard';
 
 interface ResearchWorkspaceProps {
   topic: string;
@@ -26,6 +28,12 @@ interface ResearchWorkspaceProps {
   onAddUrl: (url?: string) => boolean;
   onAddPdf: (file: File) => boolean;
   onAddManualText: () => boolean;
+  onAddAudioSource?: (
+    filename: string,
+    transcript: string,
+    fileSize?: number,
+    metadata?: Source['audioMetadata']
+  ) => boolean;
   onRemoveSource: (id: string) => void;
   onAnalyze: () => void;
   isAnalyzing: boolean;
@@ -45,12 +53,13 @@ export const ResearchWorkspace: React.FC<ResearchWorkspaceProps> = ({
   onAddUrl,
   onAddPdf,
   onAddManualText,
+  onAddAudioSource,
   onRemoveSource,
   onAnalyze,
   isAnalyzing,
   notification
 }) => {
-  const [activeTab, setActiveTab] = useState<'url' | 'pdf' | 'text'>('url');
+  const [activeTab, setActiveTab] = useState<'url' | 'pdf' | 'text' | 'audio'>('url');
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -184,6 +193,16 @@ export const ResearchWorkspace: React.FC<ResearchWorkspaceProps> = ({
                 <AlignLeft className="w-3.5 h-3.5" />
                 Manual Excerpt
               </button>
+              <button
+                type="button"
+                onClick={() => setActiveTab('audio')}
+                className={`px-3 py-1 rounded-lg transition-all flex items-center gap-1.5 ${
+                  activeTab === 'audio' ? 'bg-white text-purple-600 shadow-xs' : 'hover:text-slate-900'
+                }`}
+              >
+                <Mic className="w-3.5 h-3.5" />
+                Voice Audio
+              </button>
             </div>
           </div>
 
@@ -270,6 +289,13 @@ export const ResearchWorkspace: React.FC<ResearchWorkspaceProps> = ({
                 </button>
               </div>
             </div>
+          )}
+
+          {/* Voice Audio Tab */}
+          {activeTab === 'audio' && (
+            <AudioIngestionCard
+              onAddAudioSource={onAddAudioSource || (() => false)}
+            />
           )}
 
           {/* Staged Sources List */}

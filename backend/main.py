@@ -1,12 +1,17 @@
 import os
+from pathlib import Path
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 
+# Ensure .env is loaded reliably regardless of invocation working directory
+env_path = Path(__file__).resolve().parent / ".env"
+load_dotenv(dotenv_path=env_path)
 load_dotenv()
 
 from routes.health import router as health_router
 from routes.analyze import router as analyze_router
+from routes.audio import router as audio_router
 
 app = FastAPI(
     title="GapGlint API",
@@ -40,6 +45,7 @@ app.add_middleware(
 # Register routes
 app.include_router(health_router)
 app.include_router(analyze_router)
+app.include_router(audio_router)
 
 # Direct root and health endpoints to ensure compatibility with all serverless URL rewrites
 @app.get("/")
@@ -52,7 +58,8 @@ async def root():
         "endpoints": {
             "health": "/api/health",
             "analyze": "/api/analyze",
-            "analyze_json": "/api/analyze/json"
+            "analyze_json": "/api/analyze/json",
+            "transcribe_audio": "/api/audio/transcribe"
         }
     }
 

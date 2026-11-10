@@ -4,7 +4,7 @@ export type AnalysisTab = 'overview' | 'claims' | 'conflicts' | 'gaps' | 'checkl
 
 export interface Source {
   id: string;
-  type: 'url' | 'pdf' | 'text';
+  type: 'url' | 'pdf' | 'text' | 'audio';
   title: string;
   url?: string;
   fileName?: string;
@@ -13,6 +13,14 @@ export interface Source {
   textContent?: string;
   createdAt: string;
   status: 'ready' | 'processing' | 'error';
+  audioMetadata?: {
+    requestId?: string;
+    model?: string;
+    detectedLanguageCode?: string;
+    processingTime?: number;
+    endToEndLatency?: number;
+    originalFileName?: string;
+  };
 }
 
 export interface MetricCardData {
@@ -114,7 +122,7 @@ export interface DecisionReadiness {
 
 export interface ExtractedSourceItem {
   source_id: string;
-  type: 'url' | 'pdf' | 'text';
+  type: 'url' | 'pdf' | 'text' | 'audio';
   title: string;
   url_or_filename: string;
   extracted_text: string;
@@ -155,7 +163,7 @@ export interface AnalysisResponse {
 export interface EvidenceTraceModalData {
   title: string;
   sourceTitle: string;
-  sourceType: 'url' | 'pdf' | 'text';
+  sourceType: 'url' | 'pdf' | 'text' | 'audio';
   sourceUrlOrPath?: string | null;
   verbatimExcerpt: string;
   fullSourceContext?: string;
@@ -164,3 +172,16 @@ export interface EvidenceTraceModalData {
   publicationDate?: string | null;
   status?: string;
 }
+
+export interface AudioTranscriptionResult {
+  success: boolean;
+  transcript: string;
+  request_id?: string;
+  model: string;
+  detected_language_code?: string;
+  processing_time?: number;
+  end_to_end_latency?: number;
+  filename?: string;
+  file_size_bytes?: number;
+}
+
